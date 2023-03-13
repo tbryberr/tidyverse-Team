@@ -152,16 +152,17 @@ leveneTest(math ~ as.factor(ses), data = hsb2_data)
 
 ### Bootstrapped Confidence Interval 
 
-Because our dependent variable does not meet the assumption of normality, we should not use the ANOVA calculated above as an indicator of whether there is a significant difference between conditions. Therefore, we used bootstrapping to obtain the difference in the maximum mean and the minimum mean for each socioeconomic group. The obtained bootstrapped range in means for the low SES group is 44.64 to 54.91, for the middle SES group is 48.75 to 55.75, and for the high SES group is 51.41 to 60.76. The overlap in these ranges suggests there is not a significant difference between low and middle SES groups on math scores and middle and high SES groups on math scores. However, there is no overlap in the ranges for the low SES group and the high SES group. We can infer a significant difference between these groups in the population.
+Because our dependent variable does not meet the assumption of normality, we should not use the ANOVA calculated above as an indicator of whether there is a significant difference between conditions. Therefore, we used bootstrapping to obtain a 95% confidence interval for the difference in the maximum mean and the minimum mean for each socioeconomic group. In our sample, the difference in the maximum mean and the minimum mean of the groups was 7. Based on our results, we can say with 95% certainty the difference in the maximum mean and the minimum mean ranges from 3.68 to 10.25, which shows there are there are likely differences in math scores among the three SES conditions.
+
 
 ```{r include=FALSE}
-# We did not think Tukey's CIs were appropriate. The code for Tukey CIs is included here:
-# math.ses<- aov(hsb2$math~as.factor(hsb2$ses), data=hsb2) 
-# summary(math.ses) 
- 
-# TukeyHSD(math.ses, conf.level=.95) 
+# Sample difference in the maximum mean and the minimum mean of the groups
+max(math_summary_table[ ,4]) - min(math_summary_table[ ,4])
 
-# Bootstrapped omnibus code 
+```
+
+```{r include=FALSE}
+
 low_mean_vector <- NULL 
 mid_mean_vector <- NULL
 high_mean_vector <- NULL
@@ -172,35 +173,39 @@ n1 <- length(lowSES$math)
 n2 <- length(midSES$math)
 n3 <- length(highSES$math)
 
-# Low SES range in means
+# Creating a Low SES sampling distribution of means
 for(i in 1:10000) { 
   low_sample <- sample(lowSES$math, n1, replace=TRUE) 
   low_mean_vector <- c(low_mean_vector, mean(low_sample)) 
 } 
-min(low_mean_vector)
-max(low_mean_vector)
 
-# Mid SES range in means
+# Creating a Mid SES sampling distribution of means
 for(i in 1:10000) { 
   mid_sample <- sample(midSES$math, n2, replace=TRUE) 
   mid_mean_vector <- c(mid_mean_vector, mean(mid_sample)) 
 } 
-min(mid_mean_vector)
-max(mid_mean_vector)
 
-# High SES range in means
+# Creating a High SES sampling distribution of means
 for(i in 1:10000) { 
   high_sample <- sample(highSES$math, n3, replace=TRUE) 
   high_mean_vector <- c(high_mean_vector, mean(high_sample)) 
 } 
-min(high_mean_vector)
-max(high_mean_vector)
+
+# Bootstrapping the confidence interval
+all_means <- data.frame(low_mean_vector, mid_mean_vector, high_mean_vector)
+differences <- NULL
+
+for(i in 1:10000) { 
+  differences <- c(differences, (max(all_means[i,]) - min(all_means[i,])))
+}
+
+differences <- sort(differences)
+diff_CI <- c(differences[251], differences[9750])
 ```
 
 ### Conclusion
 
-Our team compared the math test performance of a random sample of high school seniors from three different socioeconomic status categories (low, middle, and high). The mean math test score for the low SES group was `r math_summary_table[1,4]`, for the middle SES group was `r math_summary_table[2,4]`, and the high SES group was `r math_summary_table[3,4]`. An omnibus ANOVA revealed a significant difference between SES group on math scores, but upon inspection of the distribution of math scores, we found it did not meet the normality of the distribution criterion for valid inference using ANOVA. For this reason, we used bootstrapping to calculate the ranges in means 
-
+Our team compared the math test performance of a random sample of high school seniors from three different socioeconomic status categories (low, middle, and high). The mean math test score for the low SES group was `r math_summary_table[1,4]`, for the middle SES group was `r math_summary_table[2,4]`, and the high SES group was `r math_summary_table[3,4]`. In our sample, the difference in the maximum mean and the minimum mean math scores of the groups was 7 points. An omnibus ANOVA revealed a significant difference between SES group on math scores, but upon inspection of the distribution of math scores, we found it did not meet the normality of the distribution criterion for valid inference using ANOVA. For this reason, we used bootstrapping to calculate a 95% confidence interval for the difference in the maximum mean and the minimum mean for each socioeconomic group and found that we can be 955 confident that in the greater population, the difference in the maximum mean and the minimum mean ranges from 3.68 to 10.25. From this, we can say there is very likely a difference in math test scores across socioeconomic groups.
 
 
 
