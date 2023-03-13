@@ -1,0 +1,8 @@
+"0","# Compute summary statistics "
+"0","Read_summary <- tapply(hsb2_data$read, hsb2_data$ses, "
+"0","                       function(x) { "
+"0","                         c(round(summary(x), 2), round(sd(x), 2), length(x)) "
+"0","}) "
+"2","Error in tapply(hsb2_data$read, hsb2_data$ses, function(x) { : 
+  object 'hsb2_data' not found
+"

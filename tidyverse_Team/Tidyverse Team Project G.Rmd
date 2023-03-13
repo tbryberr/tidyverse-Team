@@ -1,0 +1,78 @@
+--- 
+title: "Project G: Collaborating on Projects" 
+author: "Tidyverse" 
+date: "14 Mar 2023" 
+output: html_notebook 
+--- 
+ 
+*This project will require you to collaborate with some of your fellow students to complete a statistical analysis and report. Here are some of the tasks that you must accomplish.* 
+ 
+- Create a public GitHub repository with an RStudio project file (team leader) 
+- Put a description of the project in the README.md file (team leader) 
+- Email team members and Mike the repository address (team leader) 
+- Write a short introduction 
+- Provide a graphical display and descriptive statistics to compare groups 
+- Conduct an analysis of variance (ANOVA) for omnibus inference 
+- Check the conditions necessary for valid ANOVA inference 
+- Conduct a bootstrap for omnibus inference without needing conditions 
+- Construct Tukey pairwise confidence intervals (if appropriate) 
+- Write a conclusions section 
+- Assemble a complete knittable report (team leader) 
+ 
+*If you write any functions, put these in a **Functions** folder. Put data in a **Data** folder. These should be subfolders in your main project folder. Your finished notebook should be neat and organized. Save this notebook with your team name and **Project G** in the file name, rather than the report title. Leave the instructions in place and begin your report after the last horizontal line below. All team members will receive the same score for this project. (40 points possible)* 
+ 
+*** 
+ 
+The *HSB2 Data* includes variables collected on a random sample of high school seniors. Conduct an analysis to compare performance on the test variable assigned to your team for the three socioeconomic groups. Include a graphical display and descriptive statistics. Also include an omnibus analysis that assumes valid conditions for parametric inference (ANOVA) as well as an omnibus analysis that does not assume these conditions (bootstrap). Construct pairwise Tukey confidence intervals, if appropriate. 
+ 
+*** 
+ 
+```{r include=FALSE} 
+rm(list = ls()) 
+library(here) 
+library(tidyverse) 
+hsb2_data <- read.csv(here("Data", "hsb2.csv")) 
+``` 
+ 
+## Introduction 
+ 
+This project aims to compare the high school seniors' test score for the three different socioeconomic groups (i.e., low, middle, and high). The analysis for this project has two folds: (1) ANOVA under the assumption that the data set fulfills the necessary conditions for parametric inference, and (2) bootstrap without any necessary conditions for parametric inference. 
+ 
+## Results 
+ 
+#### Descriptive Statistics 
+ 
+According to the Table 1,  
+ 
+__Table 1. The summary of students' read test scores for the ses__ 
+```{r echo=FALSE} 
+# Compute summary statistics 
+Read_summary <- tapply(hsb2_data$read, hsb2_data$ses, 
+                       function(x) { 
+                         c(round(summary(x), 2), round(sd(x), 2), length(x)) 
+}) 
+ 
+# Create table 
+Read_summary_table <- rbind(Read_summary[[1]],  
+                            Read_summary[[2]],  
+                            Read_summary[[3]]) 
+ 
+row_names <- c("low", "middle", "high") 
+col_names <- c("Min", "1st Qu", "Median",  
+               "Mean", "3rd Qu", "Max",  
+               "SD", "n") 
+rownames(Read_summary_table) <- row_names 
+colnames(Read_summary_table) <- col_names 
+ 
+Read_summary_table 
+``` 
+__Figure 1. The boxplot for the read scores for different ses__ 
+```{r echo=FALSE} 
+read_boxplot <- boxplot(hsb2_data$read ~ hsb2_data$ses, 
+         main = "Reading Scores by SES", 
+         xlab = "SES", 
+         ylab = "Reading Score", 
+         col = "lightblue", 
+         data = hsb2_data, 
+         names = c("low", "middle", "high")) 
+```
