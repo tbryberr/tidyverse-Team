@@ -31,7 +31,8 @@ The *HSB2 Data* includes variables collected on a random sample of high school s
  
 ```{r include=FALSE} 
 rm(list = ls()) 
-library(here) 
+library(here)
+library(car) 
 hsb2_data <- read.csv(here("Data", "hsb2.csv")) 
 ``` 
  
@@ -82,8 +83,7 @@ read_boxplot <- boxplot(hsb2_data$math ~ hsb2_data$ses,
 
 ### Conducting an analysis of variance for omnibus inference 
  
-Based on the result, we have a sufficient enough evidence to say that there is   
-a significant difference in math score by SES ($p$ = 0.00047). 
+Based on the result, we have a sufficient enough evidence to say that there is a significant difference in math score by SES ($p$ = 0.00047). 
  
 ```{r include = FALSE, warning = FALSE, message = FALSE} 
 model <- aov(math ~ as.factor(ses), data = hsb2_data) 
@@ -94,22 +94,15 @@ summary(model)
  
 #### 1. Independence 
  
-Independence means that the observations in each group are independent from the   
-observations in every other groups. Moreover, observations within each group are   
-independent of one another, which can be fulfilled through random sampling. So,   
-this data seems to meet the condition of independence. 
+Independence means that the observations in each group are independent from the observations in every other groups. Moreover, observations within each group are independent of one another, which can be fulfilled through random sampling. So, this data seems to meet the condition of independence. 
  
 #### 2. Normality 
  
-#### (1) Q-Q plot 
+##### (i.) Q-Q plot 
  
-To check whether this data follow a normality visually, I made a normal probability   
-plot (Which is also called a Q-Q plot). It compares the observed quantiles of   
-the data to the expected quantiles of a normal distribution. If the data points   
-locate close to a straight line, it means that the data follow a normality. So,   
-based on the Q-Q plot, it seems that the data of math doesn't follow a normality. 
+To check whether this data follow a normality visually, we made a normal probability plot (which is also called a Q-Q plot). It compares the observed quantiles of the data to the expected quantiles of a normal distribution. If the data points are located close to a straight line, it means that the data follow a normality. So, based on the Q-Q plot, it seems that the data of math doesn't follow a normality. 
  
-__Figure 1. The Q-Q Plot for the math scores__  
+__Figure 2. The Q-Q Plot for the math scores__  
 ```{r echo = FALSE, warning = FALSE, message = FALSE} 
 # Create normal probability plot 
  
@@ -121,18 +114,9 @@ qqnorm(hsb2_data$math)
 qqline(hsb2_data$math) 
 ``` 
  
-#### (2) Shapiro-Wilk test 
+##### (ii.) Shapiro-Wilk test 
  
-Shapiro-Wilk test checks whether the data follows a normal distribution, by   
-comparing the Shapiro-Wilk test statistic to the expected distribution under a   
-normality. The  null hypothesis in this case is that the data follow a normal   
-distribution, and the output of Shapiro.test function represent the Shapiro-Wilk   
-test statistic and the p-value. As the p-value is smaller than 0.05(0.0022), we   
-have a stable enough evidence to reject the null hypothesis that the data come   
-from a normal distribution. To get more detailed information, I conducted   
-Shapiro-Wilk test seperately for each SES group. The output shows that group 2   
-and 3 ($p$ = 0.09, 0.11) follow a normality, while the group 1 ($p$ = 0.0021)   
-does not follow a normality. 
+Shapiro-Wilk test checks whether the data follows a normal distribution, by comparing the Shapiro-Wilk test statistic to the expected distribution under a normality. The null hypothesis in this case is that the data follow a normal distribution, and the output of Shapiro.test function represent the Shapiro-Wilk test statistic and the p-value. As the p-value is smaller than 0.05 ($p$ =0.0022), we have stable enough evidence to reject the null hypothesis that the data come from a normal distribution. To get more detailed information, we conducted Shapiro-Wilk test seperately for each SES group. The output shows that group 2 and 3 ($p$ = 0.09, 0.11) follow a normality, while the group 1 ($p$ = 0.0021) does not follow a normality. 
  
 ```{r include = FALSE, warning = FALSE, message = FALSE} 
 # Checking the normality assumption for the math score 
@@ -144,16 +128,11 @@ by(hsb2_data$math, as.factor(hsb2_data$ses), shapiro.test)
  
 #### 3. Homogeneity of variance 
  
-#### (1) Box plot 
+##### (i.) Box plot 
  
-We used a boxplot to check for homogeneity of variance visually. It can show us   
-the distribution of the data and the variance of the data for each group. If the   
-variances are all equal across groups, shapes and sizes of the box plots will be   
-similar. On the contrary, if the variances are not equal, the boxplots will have    
-different shapes and sizes. Based on the following box plots, we can suggest that   
-this data does not follow a homogeneity of variance. 
+We used a boxplot to check for homogeneity of variance visually. It can show us the distribution of the data and the variance of the data for each group. If the variances are all equal across groups, shapes and sizes of the box plots will be similar. On the contrary, if the variances are not equal, the boxplots will have different shapes and sizes. Based on the following box plots, we can suggest that this data does not follow a homogeneity of variance. 
  
-__Figure 2. The boxplot for the math scores for different ses__  
+__Figure 3. The boxplot for the math scores by SES__  
 ```{r echo = FALSE, warning = FALSE, message = FALSE} 
 boxplot(math ~ as.factor(ses), data = hsb2_data, 
         xlab = "SES", 
@@ -163,17 +142,70 @@ boxplot(math ~ as.factor(ses), data = hsb2_data,
  
 ``` 
  
-#### (2) Levene's test 
+##### (ii.) Levene's test 
  
-We used leveneTest, rather than Bartlett's test since the data does not follow a   
-normality. In other words, we can use Levene's test, even in the case when the   
-assumption of normality is not fulfilled. The null hypothesis is that the variances   
-are equal. Therefore, we do not have sufficient evidence to reject the null   
-hypothesis that the variance of 'math' are equal depending on SES ($p$ = 0.81).   
-However, it is important to check some conditions before we use the Levene's test,   
-such as an independence, data, outliers, sample size, and group size. 
+We used leveneTest, rather than Bartlett's test since the data does not follow a normality. In other words, we can use Levene's test, even in the case when the assumption of normality is not fulfilled. The null hypothesis is that the variances are equal. Therefore, we do not have sufficient evidence to reject the null hypothesis that the variance of 'math' are equal depending on SES ($p$ = 0.81). However, it is important to check some conditions before we use the Levene's test, such as an independence, data, outliers, sample size, and group size. 
  
 ```{r include = FALSE, warning = FALSE, message = FALSE} 
 leveneTest(math ~ as.factor(ses), data = hsb2_data) 
 ``` 
+
+### Bootstrapped Confidence Interval 
+
+Because our dependent variable does not meet the assumption of normality, we should not use the ANOVA calculated above as an indicator of whether there is a significant difference between conditions. Therefore, we used bootstrapping to obtain the difference in the maximum mean and the minimum mean for each socioeconomic group. The obtained bootstrapped range in means for the low SES group is 44.64 to 54.91, for the middle SES group is 48.75 to 55.75, and for the high SES group is 51.41 to 60.76. The overlap in these ranges suggests there is not a significant difference between low and middle SES groups on math scores and middle and high SES groups on math scores. However, there is no overlap in the ranges for the low SES group and the high SES group. We can infer a significant difference between these groups in the population.
+
+```{r include=FALSE}
+# We did not think Tukey's CIs were appropriate. The code for Tukey CIs is included here:
+# math.ses<- aov(hsb2$math~as.factor(hsb2$ses), data=hsb2) 
+# summary(math.ses) 
+ 
+# TukeyHSD(math.ses, conf.level=.95) 
+
+# Bootstrapped omnibus code 
+low_mean_vector <- NULL 
+mid_mean_vector <- NULL
+high_mean_vector <- NULL
+lowSES <- subset(hsb2_data, hsb2_data$ses == 1)
+midSES <- subset(hsb2_data, hsb2_data$ses == 2)
+highSES <- subset(hsb2_data, hsb2_data$ses == 3)
+n1 <- length(lowSES$math) 
+n2 <- length(midSES$math)
+n3 <- length(highSES$math)
+
+# Low SES range in means
+for(i in 1:10000) { 
+  low_sample <- sample(lowSES$math, n1, replace=TRUE) 
+  low_mean_vector <- c(low_mean_vector, mean(low_sample)) 
+} 
+min(low_mean_vector)
+max(low_mean_vector)
+
+# Mid SES range in means
+for(i in 1:10000) { 
+  mid_sample <- sample(midSES$math, n2, replace=TRUE) 
+  mid_mean_vector <- c(mid_mean_vector, mean(mid_sample)) 
+} 
+min(mid_mean_vector)
+max(mid_mean_vector)
+
+# High SES range in means
+for(i in 1:10000) { 
+  high_sample <- sample(highSES$math, n3, replace=TRUE) 
+  high_mean_vector <- c(high_mean_vector, mean(high_sample)) 
+} 
+min(high_mean_vector)
+max(high_mean_vector)
+```
+
+### Conclusion
+
+Our team compared the math test performance of a random sample of high school seniors from three different socioeconomic status categories (low, middle, and high). The mean math test score for the low SES group was `r math_summary_table[1,4]`, for the middle SES group was `r math_summary_table[2,4]`, and the high SES group was `r math_summary_table[3,4]`. An omnibus ANOVA revealed a significant difference between SES group on math scores, but upon inspection of the distribution of math scores, we found it did not meet the normality of the distribution criterion for valid inference using ANOVA. For this reason, we used bootstrapping to calculate the ranges in means 
+
+
+
+
+
+ 
+
+
  

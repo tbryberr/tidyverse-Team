@@ -1,3 +1,0 @@
-"0","rm(list = ls()) "
-"0","library(here) "
-"0","hsb2_data <- read.csv(here(""Data"", ""hsb2.csv"")) "

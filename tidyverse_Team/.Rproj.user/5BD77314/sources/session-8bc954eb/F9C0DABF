@@ -3,7 +3,7 @@
     "path": "~/Desktop/GitRepos/tidyverse-Team/tidyverse_Team/Tidyverse Team Project G.Rmd",
     "project_path": "Tidyverse Team Project G.Rmd",
     "type": "r_markdown",
-    "hash": "0",
+    "hash": "1335717025",
     "contents": "",
     "dirty": false,
     "created": 1678732514412.0,
@@ -13,15 +13,15 @@
         "chunk_output_type": "inline",
         "source_window_id": "",
         "Source": "Source",
-        "cursorPosition": "167,2",
-        "scrollLine": "118"
+        "cursorPosition": "173,0",
+        "scrollLine": "173"
     },
     "folds": "",
-    "lastKnownWriteTime": 1678735167,
+    "lastKnownWriteTime": 1678741359,
     "encoding": "UTF-8",
     "collab_server": "",
     "source_window": "",
-    "last_content_update": 1678735216561,
+    "last_content_update": 1678741359855,
     "read_only": false,
     "read_only_alternatives": []
 }
