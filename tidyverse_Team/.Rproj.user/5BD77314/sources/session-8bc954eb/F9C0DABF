@@ -1,28 +1,27 @@
 {
-    "id": "59BB5FD6",
+    "id": "F9C0DABF",
     "path": "~/Desktop/GitRepos/tidyverse-Team/tidyverse_Team/Tidyverse Team Project G.Rmd",
     "project_path": "Tidyverse Team Project G.Rmd",
     "type": "r_markdown",
-    "hash": "2234592901",
+    "hash": "0",
     "contents": "",
     "dirty": false,
-    "created": 1678731682575.0,
+    "created": 1678732514412.0,
     "source_on_save": false,
-    "relative_order": 2,
+    "relative_order": 1,
     "properties": {
-        "tempName": "Untitled1",
         "chunk_output_type": "inline",
         "source_window_id": "",
         "Source": "Source",
-        "cursorPosition": "77,3",
-        "scrollLine": "54"
+        "cursorPosition": "167,2",
+        "scrollLine": "118"
     },
     "folds": "",
-    "lastKnownWriteTime": 1678731804,
+    "lastKnownWriteTime": 1678735167,
     "encoding": "UTF-8",
     "collab_server": "",
     "source_window": "",
-    "last_content_update": 1678731831193,
+    "last_content_update": 1678735216561,
     "read_only": false,
     "read_only_alternatives": []
 }

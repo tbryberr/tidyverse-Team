@@ -1,0 +1,92 @@
+---
+title: 'Project B: An Array of Summary Statistics'
+author: "Taylor Bryant"
+output:
+  html_document:
+    df_print: paged
+---
+
+*This project will require you to create an array of summary statistics based on the data in a data frame. Put the data in a * **Data** *folder and read it into your notebook from that folder. Your finished notebook should be neat, organized, and adhere to your style guide. Save this notebook with your name and * **Project B** *in the file name, rather than the report title. Leave the instructions in place and begin your report after the last horizontal line below. (20 points possible)*
+
+***
+
+Create a well-labeled array that contains the means and standard deviations of public and private school students for the five tests in the hsb2 data. This is what your final array should look like. (Your array will provide output to the console. This is shown as a commented code chunk in order to display it properly in an html file.)
+
+```{r}
+# , , Public
+
+#          read     write     math  science    socst
+# Mean 51.84524 52.250000 52.24405 51.57143 51.95238
+# SD   10.42279  9.785575  9.43017 10.19250 10.90998
+
+# , , Private
+
+#           read    write      math   science     socst
+# Mean 54.250000 55.53125 54.750000 53.312500 54.781250
+# SD    9.196774  7.17965  8.882749  8.185106  9.577306
+```
+
+Base R includes a function named *colMeans()* that provides the means of all the columns of a matrix. You should find that very helpful. There is no equivalent *colSds()* function in Base R, but the preparatory code chunk that has been provided for you will add this function to your collection. It also clears the environment and loads the *here* library.
+
+***
+
+```{r prepare, include=FALSE}
+rm(list = ls())
+library(here)
+
+colSds <- function(x) {
+  apply(x, 2, sd)
+}
+
+highschoolbeyond <- read.csv(here("Data", "hsb2.csv"))
+```
+
+
+### Statistics on Academic Performance in Public and Private School Students
+\n
+It is of interest to know how public and private school students differ in their outcomes, particularly in academic performance outcomes in five academic areas: reading, writing, mathematics, science, and social studies. A dataset "High School and Beyond" was used to calculate descriptive statistics for public and private school student scores in each of these areas. See the table below for means and standard deviations.
+
+*Table 1. Means and Standard Deviations of Academic Subject Scores in Public and Private School Students*
+```{r echo=FALSE}
+# Subset data frame of student scores by school type
+publicStudents <- subset(highschoolbeyond, schtyp == 1)
+privateStudents <-  subset(highschoolbeyond, schtyp == 2)
+
+# Select columns needed 
+publicStudents <- publicStudents[ , c("read", 
+                                      "write", 
+                                      "math", 
+                                      "science", 
+                                      "socst"
+                                      )]
+privateStudents <- privateStudents[ , c("read", 
+                                        "write", 
+                                        "math", 
+                                        "science", 
+                                        "socst"
+                                        )]
+
+# Use rbind to combine means and sds into a matrix
+publicStats <- rbind(colMeans(publicStudents), colSds(publicStudents))
+privateStats <- rbind(colMeans(privateStudents), colSds(privateStudents))
+
+# Create array by combining two matrices 
+array(c(publicStats, privateStats),
+        dim = c(2, 5, 2),
+        dimnames = list( c("Mean", "SD"),
+                         c("Reading", 
+                          "Writing", 
+                          "Math", 
+                          "Science", 
+                          "Social Studies"),
+                         c("Public", "Private"))
+                          )
+
+```
+
+***
+
+**Great work!**
+
+**20/20**
+

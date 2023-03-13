@@ -1,0 +1,107 @@
+---
+title: 'Project C: Working with Data Frames'
+author: "Taylor Bryant"
+output:
+  html_document:
+    df_print: paged
+---
+
+*This project will require you to work with a set of data. Put the data in a **Data** folder and read it into your notebook from that folder. Your finished notebook should be neat, organized, and adhere to your style guide. Save this notebook with your name and **Project C** in the file name, rather than the report title. Leave the instructions in place and begin your report after the last horizontal line below. (40 points possible)*
+
+***
+
+Suppose that you have been hired by the testing company that created the five standardized tests that were used to obtain the test scores in the HSB2 data. You are charged with two tasks.
+
+First, create a data frame in which a test is the unit of analysis. The variables in your data frame must include the name of the test, five variables for each number in the five-number summary, the mean, and the standard deviation.
+
+Second, write a brief report that will provide the reader with the means and standard deviations, as well as the 95% confidence intervals for the means in the larger population, for each of the tests. Round all numbers to one decimal place. Data are collected in the same format as the HSB2 data every year, so your report should be written using inline code so that a report can be generated each year by simply using a new data file.
+
+***
+```{r include=FALSE}
+rm(list = ls())
+library(here)
+HS_Beyond <- read.csv(here("Data", "hsb2.csv"))
+```
+
+
+### Statistics Associated with Standardized Tests 
+\n
+
+The purpose of this report is to inform test-makers about a sample's performance on the standardized tests they created to assess academic performance of high school students within five academic areas. Please see Table 1 for descriptive statistics for each test, including the five number summary, mean, and standard deviation associated with each. 
+\n
+
+*Table 1. Sample Performance on Reading, Writing, Math, Science, and Social Studies Tests*
+```{r echo=FALSE}
+HSB_read <- summary(HS_Beyond$read)
+HSB_write <- summary(HS_Beyond$write)
+HSB_math <- summary(HS_Beyond$math)
+HSB_science <- summary(HS_Beyond$science)
+HSB_socst <- summary(HS_Beyond$socst)
+
+testData <- data.frame("Min" = c(HSB_read[1], 
+                                HSB_write[1],
+                                HSB_math[1],
+                                HSB_science[1],
+                                HSB_socst[1]),
+                        "1st Qu." = c(HSB_read[2], 
+                                HSB_write[2],
+                                HSB_math[2],
+                                HSB_science[2],
+                                HSB_socst[2]),
+                        "Median" =  c(HSB_read[3], 
+                                HSB_write[3],
+                                HSB_math[3],
+                                HSB_science[3],
+                                HSB_socst[3]),
+                        "3rd Qu." = c(HSB_read[5], 
+                                HSB_write[5],
+                                HSB_math[5],
+                                HSB_science[5],
+                                HSB_socst[5]),
+                        "Max" = c(HSB_read[6], 
+                                HSB_write[6],
+                                HSB_math[6],
+                                HSB_science[6],
+                                HSB_socst[6]),
+                        "Mean" = c(HSB_read[4], 
+                                HSB_write[4],
+                                HSB_math[4],
+                                HSB_science[4],
+                                HSB_socst[4]),
+                        "SD" =  c(sd(HS_Beyond$read), 
+                                sd(HS_Beyond$write),
+                                sd(HS_Beyond$math),
+                                sd(HS_Beyond$science),
+                                sd(HS_Beyond$socst))
+                        )
+
+
+row.names(testData) <- c("Reading", 
+                         "Writing", 
+                         "Math", 
+                         "Science", 
+                         "Social.Studies"
+                         )
+
+testData
+```
+```{r include=FALSE}
+t_test_results <- apply(HS_Beyond[7:11], 2, t.test)
+t_test_results
+# Confidence intervals are calculated using above information inline
+```
+
+### Sample Means, Standard Deviations, and Confidence Intervals for the Means
+\n
+
+The reading test scores had a mean of `r round(testData[1,6], 1)` and a standard deviation of `r round(testData[1,7], 1)`; it can be said with 95% confidence that the population mean falls within the range of `r round(t_test_results$read$conf.int[1], 1)` and `r round(t_test_results$read$conf.int[2], 1)`. The writing test scores had a mean of `r round(testData[2,6], 1)` and a standard deviation of `r round(testData[2,7], 1)`; it can be said with 95% confidence that the population mean falls within the range of `r round(t_test_results$write$conf.int[1], 1)` and `r round((t_test_results$write$conf.int[2]), 1)`. The math test scores had a mean of `r round(testData[3,6], 1)` and a standard deviation of `r round(testData[3,7], 1)`; it can be said with 95% confidence that the population mean falls within the range of `r round(t_test_results$math$conf.int[1], 1)` and `r round(t_test_results$read$conf.int[2], 1)`.The science test scores had a mean of `r round(testData[4,6], 1)` and a standard deviation of `r round(testData[4,7], 1)`; it can be said with 95% confidence that the population mean falls within the range of `r round(t_test_results$science$conf.int[1], 1)` and `r round(t_test_results$science$conf.int[2], 1)`. The social studies test scores had a mean of `r round(testData[5,6], 1)` and a standard deviation of `r round(testData[5,7], 1)`; it can be said with 95% confidence that the population mean falls within the range of `r round(t_test_results$socst$conf.int[1], 1)` and `r round(t_test_results$socst$conf.int[2], 1)`.
+
+***
+
+**This is a very nice project!**
+
+**40/40**
+
+
+
+

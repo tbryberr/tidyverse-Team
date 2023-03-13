@@ -1,0 +1,7 @@
+"0","read_boxplot <- boxplot(hsb2_data$math ~ hsb2_data$ses, "
+"0","         main = ""Math Scores by SES"", "
+"0","         xlab = ""SES"", "
+"0","         ylab = ""Math Score"", "
+"0","         col = ""lightblue"", "
+"0","         data = hsb2_data, "
+"0","         names = c(""low"", ""middle"", ""high"")) "

@@ -1,1 +1,0 @@
-{"frames":[{"func":"tapply(hsb2_data$read, hsb2_data$ses, function(x) {\n    c(round(summary(x), 2), round(sd(x), 2), length(x))\n})","file":"","line_number":0,"end_line_number":0,"character_number":0,"end_character_number":0}],"message":"Error in tapply(hsb2_data$read, hsb2_data$ses, function(x) { : \n  object 'hsb2_data' not found\n"}
