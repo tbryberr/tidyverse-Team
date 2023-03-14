@@ -100,8 +100,8 @@ Independence means that the observations in each group are independent from the 
  
 ##### (i.) Q-Q plot 
  
-To check whether this data follow a normality visually, we made a normal probability plot (which is also called a Q-Q plot). It compares the observed quantiles of the data to the expected quantiles of a normal distribution. If the data points are located close to a straight line, it means that the data follow a normality. So, based on the Q-Q plot, it seems that the data of math doesn't follow a normality. 
- 
+To check whether this data follow a normality visually, we made a normal probability plot (which is also called a Q-Q plot). It compares the observed quantiles of the data to the expected quantiles of a normal distribution. If the data points are located close to a straight line, it means that the data follow a normality. So, based on the Q-Q plot, it seems that the data of math doesn't follow a normality. The shape of the plot indicates an underdispersed distribution, which makes the p-value obtained in our above ANOVA a more conservative estimate.
+
 __Figure 2. The Q-Q Plot for the math scores__  
 ```{r echo = FALSE, warning = FALSE, message = FALSE} 
 # Create normal probability plot 
@@ -144,7 +144,7 @@ boxplot(math ~ as.factor(ses), data = hsb2_data,
  
 ##### (ii.) Levene's test 
  
-We used leveneTest, rather than Bartlett's test since the data does not follow a normality. In other words, we can use Levene's test, even in the case when the assumption of normality is not fulfilled. The null hypothesis is that the variances are equal. Therefore, we do not have sufficient evidence to reject the null hypothesis that the variance of 'math' are equal depending on SES ($p$ = 0.81). However, it is important to check some conditions before we use the Levene's test, such as an independence, data, outliers, sample size, and group size. 
+We used leveneTest, rather than Bartlett's test since the data does not follow a normality. In other words, we can use Levene's test, even in the case when the assumption of normality is not fulfilled. The null hypothesis is that the variances are equal. Therefore, we do not have sufficient evidence to reject the null hypothesis that the variance of 'math' are equal depending on SES ($p$ = 0.81). In the population, our groups may have homogeneous variances in math scores, so we should be able to use our omnibus ANOVA test to infer to the population. 
  
 ```{r include = FALSE, warning = FALSE, message = FALSE} 
 leveneTest(math ~ as.factor(ses), data = hsb2_data) 
@@ -152,7 +152,7 @@ leveneTest(math ~ as.factor(ses), data = hsb2_data)
 
 ### Bootstrapped Confidence Interval 
 
-Because our dependent variable does not meet the assumption of normality, we should not use the ANOVA calculated above as an indicator of whether there is a significant difference between conditions. Therefore, we used bootstrapping to obtain a 95% confidence interval for the difference in the maximum mean and the minimum mean for each socioeconomic group. In our sample, the difference in the maximum mean and the minimum mean of the groups was 7. Based on our results, we can say with 95% certainty the difference in the maximum mean and the minimum mean ranges from 3.68 to 10.25, which shows there are there are likely differences in math scores among the three SES conditions.
+We used bootstrapping to obtain a 95% confidence interval for the difference in the maximum mean and the minimum mean for each socioeconomic group. In our sample, the difference in the maximum mean and the minimum mean of the groups was 7. Based on our results, we can say with 95% certainty the difference in the maximum mean and the minimum mean ranges from 3.68 to 10.25, which shows there are there are likely differences in math scores among the three SES conditions.
 
 
 ```{r include=FALSE}
@@ -203,9 +203,18 @@ differences <- sort(differences)
 diff_CI <- c(differences[251], differences[9750])
 ```
 
+### Multiple Comparisons using Tukey Confidence Intervals
+```{r include=FALSE}
+math.ses<- aov(hsb2_data$math~as.factor(hsb2_data$ses), data=hsb2_data)
+summary(math.ses)
+
+TukeyHSD(math.ses, conf.level=.95)
+```
+To investigate which socioeconomic groups differed from each other in mean math score, we obtained Tukey confidence intervals. Our results indicated that we could be 95% confident the population mean math score for the middle SES group would range from approximately 1 point lower than the low SES group to approximately 7 points higher than the low SES group. Meanwhile, we could be 95% confident the population mean math score of the high SES group would be approximately 3 points to 11 points higher than the low SES group. Additionally, we could be 95% confident the population mean math score for the high SES group had a mean math score approximately .5 points to 7.5 points higher than the middle SES group, such that the high SES group performs better than the middle SES group as well. 
+
 ### Conclusion
 
-Our team compared the math test performance of a random sample of high school seniors from three different socioeconomic status categories (low, middle, and high). The mean math test score for the low SES group was `r math_summary_table[1,4]`, for the middle SES group was `r math_summary_table[2,4]`, and the high SES group was `r math_summary_table[3,4]`. In our sample, the difference in the maximum mean and the minimum mean math scores of the groups was 7 points. An omnibus ANOVA revealed a significant difference between SES group on math scores, but upon inspection of the distribution of math scores, we found it did not meet the normality of the distribution criterion for valid inference using ANOVA. For this reason, we used bootstrapping to calculate a 95% confidence interval for the difference in the maximum mean and the minimum mean for each socioeconomic group and found that we can be 955 confident that in the greater population, the difference in the maximum mean and the minimum mean ranges from 3.68 to 10.25. From this, we can say there is very likely a difference in math test scores across socioeconomic groups.
+Our team compared the math test performance of a random sample of high school seniors from three different socioeconomic status categories (low, middle, and high). The mean math test score for the low SES group was `r math_summary_table[1,4]`, for the middle SES group was `r math_summary_table[2,4]`, and the high SES group was `r math_summary_table[3,4]`. In our sample, the difference in the maximum mean and the minimum mean math scores of the groups was 7 points. An omnibus ANOVA revealed a significant difference between SES group on math scores. We also used bootstrapping to calculate a 95% confidence interval for the difference in the maximum mean and the minimum mean for each socioeconomic group and found that we can be 95% confident that in the greater population, the difference in the maximum mean and the minimum mean ranges from 3.68 to 10.25. From the results of the omnibus ANOVA and the bootstrapped confidence interval for the difference in the maximum mean and the minimum mean, we can say there is very likely a difference in math test scores across socioeconomic groups. Using Tukey confidence intervals to make multiple comparisons, we can be 95% confident that the high SES group performed .5 points to 7.5 points higher than the middle SES group and 3 to 11 points higher than the low SES group. 
 
 
 
