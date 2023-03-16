@@ -130,18 +130,8 @@ by(hsb2_data$math, as.factor(hsb2_data$ses), shapiro.test)
  
 ##### (i.) Box plot 
  
-We used a boxplot to check for homogeneity of variance visually. It can show us the distribution of the data and the variance of the data for each group. If the variances are all equal across groups, shapes and sizes of the box plots will be similar. On the contrary, if the variances are not equal, the boxplots will have different shapes and sizes. Based on the following box plots, we can suggest that this data does not follow a homogeneity of variance. 
- 
-__Figure 3. The boxplot for the math scores by SES__  
-```{r echo = FALSE, warning = FALSE, message = FALSE} 
-boxplot(math ~ as.factor(ses), data = hsb2_data, 
-        xlab = "SES", 
-        ylab = "Math Score", 
-        names = c("Low", "Middle", "High"), 
-        varwidth = TRUE) 
- 
-``` 
- 
+See Figure 1 for the boxplot we used to check for homogeneity of variance visually. Boxplots show us the distribution of the data and the variance of the data for each group. If the variances are all equal across groups, shapes and sizes of the box plots will be similar. On the contrary, if the variances are not equal, the boxplots will have different shapes and sizes. Based on the box plot, we can suggest that this data does not have homogeneity of variances. 
+
 ##### (ii.) Levene's test 
  
 We used leveneTest, rather than Bartlett's test since the data does not follow a normality. In other words, we can use Levene's test, even in the case when the assumption of normality is not fulfilled. The null hypothesis is that the variances are equal. Therefore, we do not have sufficient evidence to reject the null hypothesis that the variance of 'math' are equal depending on SES ($p$ = 0.81). In the population, our groups may have homogeneous variances in math scores, so we should be able to use our omnibus ANOVA test to infer to the population. 

@@ -1,63 +1,123 @@
-# Compute summary statistics
-Read_summary <- tapply(hsb2_data$read, hsb2_data$ses,
-function(x) {
-c(round(summary(x), 2), round(sd(x), 2), length(x))
-})
-rm(list = ls())
-library(here)
-library(tidyverse)
-hsb2_data <- read.csv(here("Data", "hsb2.csv"))
-# Compute summary statistics
-Read_summary <- tapply(hsb2_data$read, hsb2_data$ses,
-function(x) {
-c(round(summary(x), 2), round(sd(x), 2), length(x))
-})
-rm(list = ls())
-library(here)
-library(tidyverse)
-hsb2_data <- read.csv(here("Data", "hsb2.csv"))
-summary(na.omit(descripData$TOWRE_SWE_ScaledScore))
+---
+title: "WL SEM Analyses"
+output: html_notebook
+---
+
+```{r}
 descripData <- read.csv("WL SEM Data Recoded for R.csv")
+```
+
+Confirm age in months range
+```{r}
 summary(descripData$Age_Months)
+```
+
+Codes for Race: 1 - White, 2 - Black/African American, 3 - American Indian, 4 - Native Hawaiian/Pacific Islander, 5 - Other, 6 - Not Reported, 7 - Multiracial
+```{r}
 raceCounts <- table(descripData$Race)
 raceProps <- prop.table(raceCounts)
 raceCounts
 raceProps
+```
+```{r}
 genderCounts <- table(descripData$Gender)
 genderProps <- prop.table(genderCounts)
 genderCounts
 genderProps
+```
+Recoded kids indicated to be "English" as Not Hispanic or Latino
+```{r}
 ethCounts <- table(descripData$Ethnicity)
 ethProps <- prop.table(ethCounts)
 ethCounts
 ethProps
+```
+Word ID
+```{r}
 summary(na.omit(descripData$WRMT_AGE_WI_StandardScore))
 sd(na.omit(descripData$WRMT_AGE_WI_StandardScore))
+```
+Word Attack
+```{r}
 summary(na.omit(descripData$WRMT_AGE_WA_StandardScore))
 sd(na.omit(descripData$WRMT_AGE_WA_StandardScore))
+```
+
+CTOPP Nonword Rep
+```{r}
 summary(na.omit(descripData$CTOPP_NR_ScaledScore))
 sd(na.omit(descripData$CTOPP_NR_ScaledScore))
+```
+
+CTOPP Memory for Digits
+```{r}
 summary(na.omit(descripData$CTOPP_MD_ScaledScore))
 sd(na.omit(descripData$CTOPP_MD_ScaledScore))
+```
+
+PPVT-4
+```{r}
 summary(na.omit(descripData$PPVT_AGE_StandardScore))
 sd(na.omit(descripData$PPVT_AGE_StandardScore))
+```
+
+EVT-3
+```{r}
 summary(na.omit(descripData$EVT_AGE_StandardScore))
 sd(na.omit(descripData$EVT_AGE_StandardScore))
+```
+
+CELF-4 CLS
+```{r}
 summary(na.omit(descripData$CELFStandardScore))
 sd(na.omit(descripData$CELFStandardScore))
+```
+
+TONI
+```{r}
 summary(na.omit(descripData$TONI_IndexScore))
 sd(na.omit(descripData$TONI_IndexScore))
+```
+
+Naming
+```{r}
 summary(na.omit(descripData$WL_NamingPPC_Percent))
 sd(na.omit(descripData$WL_NamingPPC_Percent))
+```
+
+Listening
+```{r}
 summary(na.omit(descripData$WL_ListeningCorrect_Percent))
 sd(na.omit(descripData$WL_ListeningCorrect_Percent))
+```
+
+Describing
+```{r}
 summary(na.omit(descripData$WL_DescribingCorrect_Percent))
 sd(na.omit(descripData$WL_DescribingCorrect_Percent))
+```
+
+Drawing
+```{r}
 summary(na.omit(descripData$WL_DrawingAccuracy_Percent))
 sd(na.omit(descripData$WL_DrawingAccuracy_Percent))
+```
+
+Finding
+```{r}
 summary(na.omit(descripData$WL_Finding_Correct_Percent))
 sd(na.omit(descripData$WL_Finding_Correct_Percent))
+```
+
+TOWRE SWE
+```{r}
 summary(na.omit(descripData$TOWRE_SWE_ScaledScore))
 sd(na.omit(descripData$TOWRE_SWE_ScaledScore))
+```
+
+TOWRE PDE
+```{r}
 summary(na.omit(descripData$TOWRE_PDE_ScaledScore))
 sd(na.omit(descripData$TOWRE_PDE_ScaledScore))
+```
+
