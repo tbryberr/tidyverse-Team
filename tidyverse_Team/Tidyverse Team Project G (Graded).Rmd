@@ -1,0 +1,230 @@
+--- 
+title: 'Project G: Collaborating on Projects'
+author: "Tidyverse"
+date: "14 Mar 2023"
+output:
+  html_document:
+    df_print: paged
+---
+ 
+*This project will require you to collaborate with some of your fellow students to complete a statistical analysis and report. Here are some of the tasks that you must accomplish.* 
+ 
+- Create a public GitHub repository with an RStudio project file (team leader) 
+- Put a description of the project in the README.md file (team leader) 
+- Email team members and Mike the repository address (team leader) 
+- Write a short introduction 
+- Provide a graphical display and descriptive statistics to compare groups 
+- Conduct an analysis of variance (ANOVA) for omnibus inference 
+- Check the conditions necessary for valid ANOVA inference 
+- Conduct a bootstrap for omnibus inference without needing conditions 
+- Construct Tukey pairwise confidence intervals (if appropriate) 
+- Write a conclusions section 
+- Assemble a complete knittable report (team leader) 
+ 
+*If you write any functions, put these in a **Functions** folder. Put data in a **Data** folder. These should be subfolders in your main project folder. Your finished notebook should be neat and organized. Save this notebook with your team name and **Project G** in the file name, rather than the report title. Leave the instructions in place and begin your report after the last horizontal line below. All team members will receive the same score for this project. (40 points possible)* 
+ 
+*** 
+ 
+The *HSB2 Data* includes variables collected on a random sample of high school seniors. Conduct an analysis to compare performance on the test variable assigned to your team for the three socioeconomic groups. Include a graphical display and descriptive statistics. Also include an omnibus analysis that assumes valid conditions for parametric inference (ANOVA) as well as an omnibus analysis that does not assume these conditions (bootstrap). Construct pairwise Tukey confidence intervals, if appropriate. 
+ 
+*** 
+ 
+```{r include=FALSE} 
+rm(list = ls()) 
+library(here)
+library(car) 
+hsb2_data <- read.csv(here("Data", "hsb2.csv")) 
+``` 
+ 
+## Introduction 
+ 
+This project aims to compare the high school seniors' test score for the three different socioeconomic groups (i.e., low, middle, and high). The analysis for this project has two folds: (1) ANOVA under the assumption that the data set fulfills the necessary conditions for parametric inference, and (2) bootstrap without any necessary conditions for parametric inference. 
+ 
+## Results 
+ 
+#### Descriptive Statistics 
+ 
+Five number summary statistics and standard deviations associated with each group are displayed in Table 1.
+ 
+__Table 1. The summary of students' math test scores by SES__ 
+```{r echo=FALSE}
+# Compute summary statistics 
+math_summary <- tapply(hsb2_data$math, hsb2_data$ses, 
+                       function(x) { 
+                         c(round(summary(x), 2), round(sd(x), 2), length(x)) 
+}) 
+ 
+# Create table 
+math_summary_table <- rbind(math_summary[[1]],  
+                            math_summary[[2]],  
+                            math_summary[[3]]) 
+ 
+row_names <- c("low", "middle", "high") 
+col_names <- c("Min", "1st Qu", "Median",  
+               "Mean", "3rd Qu", "Max",  
+               "SD", "n") 
+rownames(math_summary_table) <- row_names 
+colnames(math_summary_table) <- col_names 
+ 
+math_summary_table 
+```
+The math test scores for the low SES group had a mean of `r math_summary_table[1,4]` and a standard deviation of `r math_summary_table[1,7]`. The scores for the middle SES group had a mean of `r math_summary_table[2,4]` and a standard deviation of `r math_summary_table[2,7]`. The scores for the middle SES group had a mean of `r math_summary_table[3,4]` and a standard deviation of `r math_summary_table[3,7]`. For a visualization of the distributions of math scores by SES group, see Figure 1. 
+ 
+__Figure 1. The boxplot for the math scores by different SES__ 
+```{r echo=FALSE}
+read_boxplot <- boxplot(hsb2_data$math ~ hsb2_data$ses, 
+         main = "Math Scores by SES", 
+         xlab = "SES", 
+         ylab = "Math Score", 
+         col = "lightblue", 
+         data = hsb2_data, 
+         names = c("low", "middle", "high")) 
+```
+
+### Conducting an analysis of variance for omnibus inference 
+ 
+Based on the result, we have a sufficient enough evidence to say that there is a significant difference in math score by SES ($p$ = 0.00047). 
+ 
+```{r include = FALSE, warning = FALSE, message = FALSE} 
+model <- aov(math ~ as.factor(ses), data = hsb2_data) 
+summary(model) 
+``` 
+ 
+### Conditions necessary for valid ANOVA inference 
+ 
+#### 1. Independence 
+ 
+Independence means that the observations in each group are independent from the observations in every other groups. Moreover, observations within each group are independent of one another, which can be fulfilled through random sampling. So, this data seems to meet the condition of independence. 
+ 
+#### 2. Normality 
+ 
+##### (i.) Q-Q plot 
+ 
+To check whether this data follow a normality visually, we made a normal probability plot (which is also called a Q-Q plot). It compares the observed quantiles of the data to the expected quantiles of a normal distribution. If the data points are located close to a straight line, it means that the data follow a normality. So, based on the Q-Q plot, it seems that the data of math doesn't follow a normality. The shape of the plot indicates an underdispersed distribution, which makes the p-value obtained in our above ANOVA a more conservative estimate.
+
+__Figure 2. The Q-Q Plot for the math scores__  
+```{r echo = FALSE, warning = FALSE, message = FALSE} 
+# Create normal probability plot 
+ 
+# The 'qqnorm' function creates the plot 
+ 
+qqnorm(hsb2_data$math) 
+ 
+# The 'qqline' function adds a reference line for comparison 
+qqline(hsb2_data$math) 
+``` 
+ 
+##### (ii.) Shapiro-Wilk test 
+ 
+Shapiro-Wilk test checks whether the data follows a normal distribution, by comparing the Shapiro-Wilk test statistic to the expected distribution under a normality. The null hypothesis in this case is that the data follow a normal distribution, and the output of Shapiro.test function represent the Shapiro-Wilk test statistic and the p-value. As the p-value is smaller than 0.05 ($p$ =0.0022), we have stable enough evidence to reject the null hypothesis that the data come from a normal distribution. To get more detailed information, we conducted Shapiro-Wilk test seperately for each SES group. The output shows that group 2 and 3 ($p$ = 0.09, 0.11) follow a normality, while the group 1 ($p$ = 0.0021) does not follow a normality. 
+ 
+```{r include = FALSE, warning = FALSE, message = FALSE} 
+# Checking the normality assumption for the math score 
+shapiro.test(hsb2_data$math) 
+ 
+# Checking the normality assumption for the math score by SES 
+by(hsb2_data$math, as.factor(hsb2_data$ses), shapiro.test) 
+``` 
+ 
+#### 3. Homogeneity of variance 
+ 
+##### (i.) Box plot 
+ 
+We used a boxplot to check for homogeneity of variance visually. It can show us the distribution of the data and the variance of the data for each group. If the variances are all equal across groups, shapes and sizes of the box plots will be similar. On the contrary, if the variances are not equal, the boxplots will have different shapes and sizes. Based on the following box plots, we can suggest that this data does not follow a homogeneity of variance. 
+ 
+__Figure 3. The boxplot for the math scores by SES__  
+```{r echo = FALSE, warning = FALSE, message = FALSE} 
+boxplot(math ~ as.factor(ses), data = hsb2_data, 
+        xlab = "SES", 
+        ylab = "Math Score", 
+        names = c("Low", "Middle", "High"), 
+        varwidth = TRUE) 
+ 
+``` 
+ 
+##### (ii.) Levene's test 
+ 
+We used leveneTest, rather than Bartlett's test since the data does not follow a normality. In other words, we can use Levene's test, even in the case when the assumption of normality is not fulfilled. The null hypothesis is that the variances are equal. Therefore, we do not have sufficient evidence to reject the null hypothesis that the variance of 'math' are equal depending on SES ($p$ = 0.81). In the population, our groups may have homogeneous variances in math scores, so we should be able to use our omnibus ANOVA test to infer to the population. 
+ 
+```{r include = FALSE, warning = FALSE, message = FALSE} 
+leveneTest(math ~ as.factor(ses), data = hsb2_data) 
+``` 
+
+### Bootstrapped Confidence Interval 
+
+We used bootstrapping to obtain a 95% confidence interval for the difference in the maximum mean and the minimum mean for each socioeconomic group. In our sample, the difference in the maximum mean and the minimum mean of the groups was 7. Based on our results, we can say with 95% certainty the difference in the maximum mean and the minimum mean ranges from 3.68 to 10.25, which shows there are there are likely differences in math scores among the three SES conditions.
+
+
+```{r include=FALSE}
+# Sample difference in the maximum mean and the minimum mean of the groups
+max(math_summary_table[ ,4]) - min(math_summary_table[ ,4])
+
+```
+
+```{r include=FALSE}
+
+low_mean_vector <- NULL 
+mid_mean_vector <- NULL
+high_mean_vector <- NULL
+lowSES <- subset(hsb2_data, hsb2_data$ses == 1)
+midSES <- subset(hsb2_data, hsb2_data$ses == 2)
+highSES <- subset(hsb2_data, hsb2_data$ses == 3)
+n1 <- length(lowSES$math) 
+n2 <- length(midSES$math)
+n3 <- length(highSES$math)
+
+# Creating a Low SES sampling distribution of means
+for(i in 1:10000) { 
+  low_sample <- sample(lowSES$math, n1, replace=TRUE) 
+  low_mean_vector <- c(low_mean_vector, mean(low_sample)) 
+} 
+
+# Creating a Mid SES sampling distribution of means
+for(i in 1:10000) { 
+  mid_sample <- sample(midSES$math, n2, replace=TRUE) 
+  mid_mean_vector <- c(mid_mean_vector, mean(mid_sample)) 
+} 
+
+# Creating a High SES sampling distribution of means
+for(i in 1:10000) { 
+  high_sample <- sample(highSES$math, n3, replace=TRUE) 
+  high_mean_vector <- c(high_mean_vector, mean(high_sample)) 
+} 
+
+# Bootstrapping the confidence interval
+all_means <- data.frame(low_mean_vector, mid_mean_vector, high_mean_vector)
+differences <- NULL
+
+for(i in 1:10000) { 
+  differences <- c(differences, (max(all_means[i,]) - min(all_means[i,])))
+}
+
+differences <- sort(differences)
+diff_CI <- c(differences[251], differences[9750])
+```
+
+### Multiple Comparisons using Tukey Confidence Intervals
+```{r include=FALSE}
+math.ses<- aov(hsb2_data$math~as.factor(hsb2_data$ses), data=hsb2_data)
+summary(math.ses)
+
+TukeyHSD(math.ses, conf.level=.95)
+```
+To investigate which socioeconomic groups differed from each other in mean math score, we obtained Tukey confidence intervals. Our results indicated that we could be 95% confident the population mean math score for the middle SES group would range from approximately 1 point lower than the low SES group to approximately 7 points higher than the low SES group. Meanwhile, we could be 95% confident the population mean math score of the high SES group would be approximately 3 points to 11 points higher than the low SES group. Additionally, we could be 95% confident the population mean math score for the high SES group had a mean math score approximately .5 points to 7.5 points higher than the middle SES group, such that the high SES group performs better than the middle SES group as well. 
+
+### Conclusion
+
+Our team compared the math test performance of a random sample of high school seniors from three different socioeconomic status categories (low, middle, and high). The mean math test score for the low SES group was `r math_summary_table[1,4]`, for the middle SES group was `r math_summary_table[2,4]`, and the high SES group was `r math_summary_table[3,4]`. In our sample, the difference in the maximum mean and the minimum mean math scores of the groups was 7 points. An omnibus ANOVA revealed a significant difference between SES group on math scores. We also used bootstrapping to calculate a 95% confidence interval for the difference in the maximum mean and the minimum mean for each socioeconomic group and found that we can be 95% confident that in the greater population, the difference in the maximum mean and the minimum mean ranges from 3.68 to 10.25. From the results of the omnibus ANOVA and the bootstrapped confidence interval for the difference in the maximum mean and the minimum mean, we can say there is very likely a difference in math test scores across socioeconomic groups. Using Tukey confidence intervals to make multiple comparisons, we can be 95% confident that the high SES group performed .5 points to 7.5 points higher than the middle SES group and 3 to 11 points higher than the low SES group. 
+
+***
+
+**That's what I'm talking about! Nice work, Team Tidyverse!**
+
+**40/40**
+
+
+
+ 
+
+
+ 
